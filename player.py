@@ -3,6 +3,8 @@ import Ice
 Ice.loadSlice('drobots.ice')
 import drobots
 
+from controller import ControllerI
+
 class PlayerI(drobots.Player):
     """
     Player interface implementation.
