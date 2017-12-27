@@ -3,7 +3,7 @@ import Ice
 Ice.loadSlice('drobots.ice')
 import drobots
 
-from controller import ControllerI
+from controller import ControllerI, DetectorControllerI
 
 class PlayerI(drobots.Player):
     """
