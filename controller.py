@@ -21,11 +21,12 @@ class ControllerI(drobots.RobotController):
     def turn(self, current):
         """
         Method that will be invoked remotely by the server. In this method we
-        should communicate with out Robot
+        should communicate with our Robot
         """
         location = self.bot.location()
         print("Turn of {} at location {},{}".format(
             id(self), location.x, location.y))
+        print(type(self.bot).__name__)
 
     def robotDestroyed(self, current):
         """
