@@ -23,8 +23,10 @@ class PlayerI(drobots.Player):
         ]
 
     def makeController(self, bot, current=None):
-        self.controller_factory_prx.hola()
         return self.controller_factory_prx.make(bot)
+
+    def makeDetectorController(self, current):
+        return self.controller_factory_prx.makeDetectorController()
 
     def getMinePosition(self, current):
         """

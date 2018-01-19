@@ -1,6 +1,6 @@
 import Ice
-Ice.loadSlice('drobots.ice')
-Ice.loadSlice('--all services.ice')
+Ice.loadSlice('-I. --all drobots.ice')
+Ice.loadSlice('-I. --all services.ice')
 
 import services
 import drobots
@@ -15,6 +15,13 @@ class ControllerFactoryI(services.ControllerFactory):
         print("hola")
 
     def make(self, bot, current=None):
+        self.mines = [
+            drobots.Point(x=100, y=100),
+            drobots.Point(x=100, y=300),
+            drobots.Point(x=300, y=100),
+            drobots.Point(x=300, y=300),
+        ]
+
         """
         makeController is invoked by the game server. The method receives a
         "bot", instance of RobotPrx.
@@ -28,6 +35,22 @@ class ControllerFactoryI(services.ControllerFactory):
         object_prx = current.adapter.addWithUUID(controller)
         controller_prx = drobots.RobotControllerPrx.checkedCast(object_prx)
         return controller_prx
+
+    def makeDetectorController(self, current):
+        """
+        Pending implementation:
+        DetectorController* makeDetectorController();
+        """
+        print("Make detector controller.")
+
+        if self.detector_controller is not None:
+            return self.detector_controller
+
+        controller = DetectorControllerI()
+        object_prx = current.adapter.addWithUUID(controller)
+        self.detector_controller = \
+            drobots.DetectorControllerPrx.checkedCast(object_prx)
+        return self.detector_controller
 
 class ControllerI(drobots.RobotController):
     """
