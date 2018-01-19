@@ -1,7 +1,7 @@
 import sys
 import Ice
-Ice.loadSlice('--all drobots.ice')
-Ice.loadSlice('--all services.ice')
+Ice.loadSlice('-I. --all drobots.ice')
+Ice.loadSlice('-I. --all services.ice')
 
 import services
 from container import ContainerI
