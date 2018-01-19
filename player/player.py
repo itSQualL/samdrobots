@@ -8,7 +8,8 @@ class PlayerI(drobots.Player):
     Player interface implementation
     """
 
-    def __init__(self):
+    def __init__(self, controller_factory_prx):
+        self.controller_factory_prx = controller_factory_prx
         self.detector_controller = None
         self.mine_index = 0
         self.mines = [
@@ -17,6 +18,9 @@ class PlayerI(drobots.Player):
             drobots.Point(x=300, y=100),
             drobots.Point(x=300, y=300),
         ]
+
+    def makeController(self, bot):
+        return self.controller_factory_prx.make(bot)
 
     def win(self, current=None):
         """
@@ -39,6 +43,3 @@ class PlayerI(drobots.Player):
         """
         print("The game was aborted")
         current.adapter.getCommunicator().shutdown()
-
-
-

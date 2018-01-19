@@ -2,7 +2,9 @@ import sys
 import Ice
 
 Ice.loadSlice('drobots.ice')
+Ice.loadSlice('--all services.ice')
 import drobots
+import services
 
 from player import PlayerI
 
@@ -25,10 +27,18 @@ class ClientApp(Ice.Application):
         game_prx = broker.propertyToProxy("GameProxy")
         game_prx = drobots.GamePrx.checkedCast(game_prx)
 
+        #Create container proxy
+        container_prx = broker.propertyToProxy("ContainerProxy")
+        container_prx = services.ContainerPrx.checkedCast(container_prx)
+
+        #Get controller factory proxy
+        container_list = container_prx.list()
+        controller_factory_prx = container_list["ControllerFactory"]
+
         # Using "getProperty" forces to define the property "PlayerName"
         name = broker.getProperties().getProperty("PlayerName")
 
-        servant = PlayerI()
+        servant = PlayerI(controller_factory_prx)
         player_prx = adapter.addWithUUID(servant)
         player_prx = drobots.PlayerPrx.uncheckedCast(player_prx)
         adapter.activate()
