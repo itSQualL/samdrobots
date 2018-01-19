@@ -1,3 +1,5 @@
+#include "drobots.ice"
+
 module services {
 
   exception AlreadyExists { string key; };
@@ -9,5 +11,10 @@ module services {
     void link(string key, Object* proxy) throws AlreadyExists;
     void unlink(string key) throws NoSuchKey;
     GamePrxsDict list();
+  };
+
+  interface ControllerFactory {
+     void hola();
+     drobots::RobotController* make(drobots::Robot* bot);
   };
 };

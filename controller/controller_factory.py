@@ -11,7 +11,10 @@ class ControllerFactoryI(services.ControllerFactory):
     ControllerFactory interface implementation
     """
 
-    def make(self, bot, container, key, current=None):
+    def hola(self, current=None):
+        print("hola")
+
+    def make(self, bot, current=None):
         """
         makeController is invoked by the game server. The method receives a
         "bot", instance of RobotPrx.

@@ -14,6 +14,7 @@ module services {
   };
 
   interface ControllerFactory {
+     void hola();
      drobots::RobotController* make(drobots::Robot* bot);
   };
 };

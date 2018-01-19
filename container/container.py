@@ -1,5 +1,6 @@
 import Ice
-Ice.loadSlice('services.ice')
+Ice.loadSlice('--all drobots.ice')
+Ice.loadSlice('--all services.ice')
 
 import services
 

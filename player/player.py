@@ -1,7 +1,10 @@
 import Ice
+Ice.loadSlice('-I. --all drobots.ice')
+Ice.loadSlice('-I. --all services.ice')
 
-Ice.loadSlice('drobots.ice')
+import services
 import drobots
+
 
 class PlayerI(drobots.Player):
     """
@@ -19,8 +22,18 @@ class PlayerI(drobots.Player):
             drobots.Point(x=300, y=300),
         ]
 
-    def makeController(self, bot):
+    def makeController(self, bot, current=None):
+        self.controller_factory_prx.hola()
         return self.controller_factory_prx.make(bot)
+
+    def getMinePosition(self, current):
+        """
+        Pending implementation:
+         Point getMinePosition();
+        """
+        pos = self.mines[self.mine_index]
+        self.mine_index += 1
+        return pos
 
     def win(self, current=None):
         """
