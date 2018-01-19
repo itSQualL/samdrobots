@@ -10,9 +10,15 @@ class ControllerFactoryI(services.ControllerFactory):
     """
     ControllerFactory interface implementation
     """
-
-    def hola(self, current=None):
-        print("hola")
+    def __init__(self):
+        self.detector_controller = None
+        self.mine_index = 0
+        self.mines = [
+            drobots.Point(x=100, y=100),
+            drobots.Point(x=100, y=300),
+            drobots.Point(x=300, y=100),
+            drobots.Point(x=300, y=300),
+        ]
 
     def make(self, bot, current=None):
         self.mines = [
