@@ -3,15 +3,15 @@ import Ice
 Ice.loadSlice('services.ice')
 
 import services
-from container_factory import ContainerFactoryI
+from container import ContainerI
 
 class Server(Ice.Application):
     def run(self, argv):
         broker = self.communicator()
-        servant = ContainerFactoryI()
+        servant = ContainerI()
 
-        adapter = broker.createObjectAdapter("ContainerFactoryAdapter")
-        proxy = adapter.add(servant, broker.stringToIdentity("containerFactory"))
+        adapter = broker.createObjectAdapter("ContainerAdapter")
+        proxy = adapter.add(servant, broker.stringToIdentity("container"))
         print(proxy)
 
         adapter.activate()
