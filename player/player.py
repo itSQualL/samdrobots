@@ -18,7 +18,27 @@ class PlayerI(drobots.Player):
             drobots.Point(x=300, y=300),
         ]
 
+    def win(self, current=None):
+        """
+        Received when we win the match
+        """
+        print("You win")
+        current.adapter.getCommunicator().shutdown()
 
+    def lose(self, current=None):
+        """
+        Received when we lose the match
+        """
+        print("You lose :-(")
+        current.adapter.getCommunicator().shutdown()
+
+    def gameAbort(self, current=None):
+        """
+        Received when the match is aborted (when there are not enough players
+        to start a game, for example)
+        """
+        print("The game was aborted")
+        current.adapter.getCommunicator().shutdown()
 
 
 
