@@ -10,6 +10,7 @@ class ControllerFactoryI(services.ControllerFactory):
     """
     def __init__(self):
         self.detector_controller = None
+        self.controllers = 0
         self.mine_index = 0
         self.mines = [
             drobots.Point(x=100, y=100),
@@ -18,7 +19,7 @@ class ControllerFactoryI(services.ControllerFactory):
             drobots.Point(x=300, y=300),
         ]
 
-    def make(self, bot, current=None):
+    def makeController(self, bot, current=None):
         self.mines = [
             drobots.Point(x=100, y=100),
             drobots.Point(x=100, y=300),
@@ -38,6 +39,8 @@ class ControllerFactoryI(services.ControllerFactory):
         controller = ControllerI(bot, self.mines)
         object_prx = current.adapter.addWithUUID(controller)
         controller_prx = drobots.RobotControllerPrx.checkedCast(object_prx)
+
+        self.controllers += 1
         return controller_prx
 
     def makeDetectorController(self, current):
@@ -55,6 +58,9 @@ class ControllerFactoryI(services.ControllerFactory):
         self.detector_controller = \
             drobots.DetectorControllerPrx.checkedCast(object_prx)
         return self.detector_controller
+
+    def amountCreated(self, current=None):
+        return self.controllers
 
 class ControllerI(drobots.RobotController):
     """

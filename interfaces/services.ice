@@ -14,7 +14,8 @@ module services {
   };
 
   interface ControllerFactory {
-     drobots::RobotController* make(drobots::Robot* bot);
+     int amountCreated();
+     drobots::RobotController* makeController(drobots::Robot* bot);
      drobots::DetectorController* makeDetectorController();
   };
 };

@@ -16,7 +16,12 @@ class Server(Ice.Application):
 
         container_prx = broker.propertyToProxy("ContainerProxy")
         container_prx = services.ContainerPrx.checkedCast(container_prx)
-        container_prx.link("controller_factory", controller_factory_prx)
+        container_list = container_prx.list()
+
+        if not "controller_factory_1" in container_list:
+            container_prx.link("controller_factory_1", controller_factory_prx)
+        else:
+            container_prx.link("controller_factory_2", controller_factory_prx)
 
         self.shutdownOnInterrupt()
         broker.waitForShutdown()

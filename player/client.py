@@ -32,15 +32,10 @@ class ClientApp(Ice.Application):
         container_prx = broker.propertyToProxy("ContainerProxy")
         container_prx = services.ContainerPrx.checkedCast(container_prx)
 
-        #Get controller factory proxy
-        container_list = container_prx.list()
-        controller_factory_prx = container_list["controller_factory"]
-        controller_factory_prx = services.ControllerFactoryPrx.checkedCast(controller_factory_prx)
-
         # Using "getProperty" forces to define the property "PlayerName"
         name = broker.getProperties().getProperty("PlayerName")
 
-        servant = PlayerI(controller_factory_prx)
+        servant = PlayerI(container_prx)
         player_prx = adapter.addWithUUID(servant)
         player_prx = drobots.PlayerPrx.uncheckedCast(player_prx)
         adapter.activate()
