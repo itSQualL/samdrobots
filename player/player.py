@@ -1,5 +1,5 @@
 import Ice
-Ice.loadSlice('-I. --all ../interfaces/drobots.ice')
+Ice.loadSlice('-I. --all ./interfaces/drobots.ice')
 
 import drobots
 
