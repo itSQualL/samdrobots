@@ -150,19 +150,19 @@ class RobotControllerDefender(drobots.RobotController):
         print("*********FIN TURNO "+str(self.turno) + " DEFENDER*********")
         self.turno+=1
 
-    def move(self, current, location):
+    def move(self, location):
         location=self.bot.location();
         
-        if(self.location.x>390 and location.y<10):
+        if(location.x>390 and location.y<10):
             self.bot.drive(225,100)
             print("Se supone que me muevo con angulo: 225 velocidad: 100")
-        elif(self.location.x<10 and location.y<10):
+        elif(location.x<10 and location.y<10):
             self.bot.drive(315,100)
             print("Se supone que me muevo con angulo: 315 velocidad: 100")
-        elif(self.location.y>390 and location.x<10):
+        elif(location.y>390 and location.x<10):
             self.bot.drive(45,100)
             print("Se supone que me muevo con angulo: 45 velocidad: 100")
-        elif(self.location.y>390 and location.x>390):
+        elif(location.y>390 and location.x>390):
             self.bot.drive(135,100)
             print("Se supone que me muevo con angulo: 135 velocidad: 100")
         else:
