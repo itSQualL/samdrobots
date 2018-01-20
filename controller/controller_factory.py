@@ -1,6 +1,7 @@
 import Ice
 Ice.loadSlice('-I. --all ./interfaces/services.ice')
-
+import random
+import math
 import drobots
 import services
 
@@ -92,7 +93,7 @@ class RobotControllerAttacker(drobots.RobotController):
         print("****************************")
 
         location = self.bot.location()
-        print("Posicion: X = {}, Y = {}".format(id(self), location.x, location.y))
+        print("Posicion: X = {}, Y = {}".format(location.x, location.y))
 
 
     def robotDestroyed(self, current):
@@ -137,7 +138,7 @@ class RobotControllerDefender(drobots.RobotController):
         
 
         location = self.bot.location()
-        print("Posicion: X = {}, Y = {}".format(id(self), location.x, location.y))
+        print("Posicion: X = {}, Y = {}".format(location.x, location.y))
 
         
         self.angulo = random.randint(0,359)
@@ -146,7 +147,7 @@ class RobotControllerDefender(drobots.RobotController):
         if(self.bot.energy()>60):
             self.move(location)
 
-        print("*********FIN TURNO "+str(self.turno) + "DEFENDER*********")
+        print("*********FIN TURNO "+str(self.turno) + " DEFENDER*********")
         self.turno+=1
 
     def move(self, current, location):
@@ -154,20 +155,27 @@ class RobotControllerDefender(drobots.RobotController):
         
         if(self.location.x>390 and location.y<10):
             self.bot.drive(225,100)
+            print("Se supone que me muevo con angulo: 225 velocidad: 100")
         elif(self.location.x<10 and location.y<10):
             self.bot.drive(315,100)
+            print("Se supone que me muevo con angulo: 315 velocidad: 100")
         elif(self.location.y>390 and location.x<10):
             self.bot.drive(45,100)
+            print("Se supone que me muevo con angulo: 45 velocidad: 100")
         elif(self.location.y>390 and location.x>390):
             self.bot.drive(135,100)
+            print("Se supone que me muevo con angulo: 135 velocidad: 100")
         else:
             self.bot.drive(random.randint(0,360),100)
+            print("Se supone que me muevo con angulo: random velocidad: 100")
 
 
     def escanear(self):
         angulo = random.randint(0,360)
         enemies = self.bot.scan(angulo,20)
+
         if enemies != 0:
+            print("He encontrado enemigos, me vuevo en direccion contraria")
             if (angulo >= 180):
                 angulo -=180
             else:
@@ -181,6 +189,7 @@ class RobotControllerDefender(drobots.RobotController):
         Pending implementation:
         void robotDestroyed();
         """
+        print("El robot ha muerto")
         pass
 
 
