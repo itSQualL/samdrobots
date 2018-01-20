@@ -130,21 +130,21 @@ class RobotControllerAttacker(drobots.RobotController):
     def move(self):
         location=self.bot.location();
         
-        if(location.x>390 and location.y<10):
-            self.bot.drive(225,100)
-            print("Se supone que me muevo con angulo: 225 velocidad: 100")
-        elif(location.x<10 and location.y<10):
-            self.bot.drive(315,100)
-            print("Se supone que me muevo con angulo: 315 velocidad: 100")
-        elif(location.y>390 and location.x<10):
-            self.bot.drive(45,100)
-            print("Se supone que me muevo con angulo: 45 velocidad: 100")
-        elif(location.y>390 and location.x>390):
-            self.bot.drive(135,100)
-            print("Se supone que me muevo con angulo: 135 velocidad: 100")
-        else:
-            self.bot.drive(random.randint(0,359),100)
-            print("Se supone que me muevo con angulo: random velocidad: 100")
+        m=(200 - location.y) / (200 - location.x)
+        rad=math.atan(m)
+        angulo = math.degrees(rad)
+
+        if(angulo<0):
+            angulo+=360
+        if(location.x>200 and location.y<200):
+            angulo-=180
+        elif(location.x>200 and location.y>200):
+            angulo+=180
+
+        print("\nVoy hacia el centro con angulo " + str(angulo))
+        self.bot.drive(angulo,100);
+
+
 
         self.location =self.bot.location()
 
@@ -240,22 +240,33 @@ class RobotControllerDefender(drobots.RobotController):
 
     def move(self, location):
         location=self.bot.location();
-        
-        if(location.x>350 and location.y<50):
-            self.bot.drive(225,100)
-            print("Se supone que me muevo con angulo: 225 velocidad: 100")
-        elif(location.x<50 and location.y<50):
-            self.bot.drive(315,100)
-            print("Se supone que me muevo con angulo: 315 velocidad: 100")
-        elif(location.y>350 and location.x<50):
-            self.bot.drive(45,100)
-            print("Se supone que me muevo con angulo: 45 velocidad: 100")
-        elif(location.y>350 and location.x>350):
-            self.bot.drive(135,100)
-            print("Se supone que me muevo con angulo: 135 velocidad: 100")
-        else:
-            self.bot.drive(random.randint(0,359),100)
-            print("Se supone que me muevo con angulo: random velocidad: 100")
+        if(location.x>350):
+            if(location.y<=50):
+                self.bot.drive(135,100)
+                print("Moviendo robot con alguno=135 velocidad=100")
+            elif(location.y>50 and location.y<=350):
+                self.bot.drive(180,100)
+                print("Moviendo robot con alguno=180 velocidad=100")
+            elif(location.y>350):
+                self.bot.drive(215,100)
+                print("Moviendo robot con alguno=135 velocidad=100")
+
+        elif(location.x<50):
+            if(location.y<=50):
+                self.bot.drive(45,100)
+                print("Moviendo robot con alguno=45 velocidad=100")
+            elif(location.y>50 and location.y<=350):
+                self.bot.drive(0,100)
+                print("Moviendo robot con alguno=0 velocidad=100")
+            elif(location.y>350):
+                self.bot.drive(315,100)
+                print("Moviendo robot con alguno=315 velocidad=100")
+        if(location.y<50 and location.x>50 and location.x<350):
+            self.bot.drive(90,100)
+            print("Moviendo robot con alguno=90 velocidad=100")
+        elif(location.y>350 and location.x>50 and location.x<350):
+            self.bot.drive(270,100)
+            print("Moviendo robot con alguno=270 velocidad=100")
 
 
     def escanear(self):

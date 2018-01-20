@@ -25,7 +25,7 @@ class PlayerI(drobots.Player):
 
 
     def makeController(self, bot, current=None):
-        if self.controller_factory_prx_1.amountCreated() < 1:
+        if self.controller_factory_prx_1.amountCreated() < 2:
             controller = self.controller_factory_prx_1.makeController(bot)
         else:
             controller = self.controller_factory_prx_2.makeController(bot)
