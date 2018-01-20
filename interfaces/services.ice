@@ -18,4 +18,10 @@ module services {
      drobots::RobotController* makeController(drobots::Robot* bot);
      drobots::DetectorController* makeDetectorController();
   };
+
+  interface Communication {
+    void setEnemiesAlert(drobots::Point position, int enemies);
+  };
+
+  interface ControllerCommunication extends drobots::RobotController, Communication {};
 };

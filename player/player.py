@@ -15,6 +15,7 @@ class PlayerI(drobots.Player):
         self.container_prx = container_prx
         self.controller_factory_prx_1 = self.__get_controller_factory_prx(1)
         self.controller_factory_prx_2 = self.__get_controller_factory_prx(2)
+        self.detector_factory_prx_1 = self.__get_detector_factory_prx()
         self.mine_index = 0
         self.mines = [
             drobots.Point(x=100, y=100),
@@ -33,7 +34,7 @@ class PlayerI(drobots.Player):
         return controller
 
     def makeDetectorController(self, current):
-        return self.controller_factory_prx_1.makeDetectorController()
+        return self.detector_factory_prx_1.makeDetectorController()
 
     def getMinePosition(self, current):
         """
@@ -72,3 +73,10 @@ class PlayerI(drobots.Player):
         controller_factory_prx = services.ControllerFactoryPrx.checkedCast(controller_factory_prx)
 
         return controller_factory_prx
+
+    def __get_detector_factory_prx(self):
+        container_list = self.container_prx.list()
+        detector_factory_prx = container_list["detector_factory_1"]
+        detector_factory_prx = services.ControllerFactoryPrx.checkedCast(detector_factory_prx)
+
+        return detector_factory_prx

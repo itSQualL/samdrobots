@@ -10,7 +10,8 @@ class ControllerFactoryI(services.ControllerFactory):
     """
     ControllerFactory interface implementation
     """
-    def __init__(self):
+    def __init__(self, container_prx):
+        self.container_prx = container_prx
         self.detector_controller = None
         self.controllers = 0
         self.mine_index = 0
@@ -49,7 +50,19 @@ class ControllerFactoryI(services.ControllerFactory):
             controller_prx = drobots.RobotControllerPrx.checkedCast(object_prx)
 
         self.controllers += 1
+        self._set_bot_prx(controller_prx)
         return controller_prx
+
+    def _set_bot_prx(self, controller_prx):
+        container_list = self.container_prx.list()
+        if not "bot_0" in container_list:
+            self.container_prx.link("bot_0", controller_prx)
+        elif not "bot_1" in container_list:
+            self.container_prx.link("bot_1", controller_prx)
+        elif not "bot_2" in container_list:
+            self.container_prx.link("bot_2", controller_prx)
+        elif not "bot_3" in container_list:
+            self.container_prx.link("bot_3", controller_prx)
 
     def makeDetectorController(self, current):
         """
@@ -61,7 +74,7 @@ class ControllerFactoryI(services.ControllerFactory):
         if self.detector_controller is not None:
             return self.detector_controller
 
-        controller = DetectorControllerI()
+        controller = DetectorControllerI(self.container_prx)
         object_prx = current.adapter.addWithUUID(controller)
         self.detector_controller = \
             drobots.DetectorControllerPrx.checkedCast(object_prx)
@@ -70,7 +83,7 @@ class ControllerFactoryI(services.ControllerFactory):
     def amountCreated(self, current=None):
         return self.controllers
 
-class RobotControllerAttacker(drobots.RobotController):
+class RobotControllerAttacker(services.ControllerCommunication):
     """
     RobotController interface implementation.
 
@@ -90,7 +103,8 @@ class RobotControllerAttacker(drobots.RobotController):
         self.location = self.bot.location()
         self.angulo = 0
         self.estado = 1
-
+        self.alert_position = drobots.Point()
+        self.alert_enemies = 0
 
 
     def turn(self, current):
@@ -192,8 +206,11 @@ class RobotControllerAttacker(drobots.RobotController):
         print("Robot ATTACKER murio\n")
         pass
 
+    def setEnemiesAlert(self, position, enemies, current=None):
+        self.alert_position = position
+        self.alert_enemies = enemies
 
-class RobotControllerDefender(drobots.RobotController):
+class RobotControllerDefender(services.ControllerCommunication):
     """
     RobotController interface implementation.
 
@@ -209,6 +226,8 @@ class RobotControllerDefender(drobots.RobotController):
         self.bot = bot
         self.mines = mines
         self.turno = 0
+        self.alert_position = drobots.Point()
+        self.alert_enemies = 0
 
 
 
@@ -268,7 +287,6 @@ class RobotControllerDefender(drobots.RobotController):
             self.bot.drive(270,100)
             print("Moviendo robot con alguno=270 velocidad=100")
 
-
     def escanear(self):
         angulo = random.randint(0,360)
         enemies = self.bot.scan(angulo,20)
@@ -291,7 +309,9 @@ class RobotControllerDefender(drobots.RobotController):
         print("El robot ha muerto\n")
         pass
 
-
+    def setEnemiesAlert(self, position, enemies, current=None):
+        self.alert_position = position
+        self.alert_enemies = enemies
 
 class DetectorControllerI(drobots.DetectorController):
     """
@@ -304,6 +324,9 @@ class DetectorControllerI(drobots.DetectorController):
     the same servant (and its proxy) to every "makeDetectorController" petition
     on the PlayerI
     """
+    def __init__(self, container_prx):
+        self.container_prx = container_prx
+
     def alert(self, pos, robots_detected, current):
         """
         Method that receives a Point with the coordinates where the detector is
@@ -311,5 +334,23 @@ class DetectorControllerI(drobots.DetectorController):
         when at least 1 robot is near to the detector. If there is no robots
         around it, this method will never be called.
         """
+        container_list = self.container_prx.list()
+
+        bot_0_prx = container_list["bot_0"]
+        bot_0_prx = services.ControllerCommunicationPrx.checkedCast(bot_0_prx)
+        bot_0_prx.setEnemiesAlert(pos, robots_detected)
+
+        bot_1_prx = container_list["bot_1"]
+        bot_1_prx = services.ControllerCommunicationPrx.checkedCast(bot_1_prx)
+        bot_1_prx.setEnemiesAlert(pos, robots_detected)
+
+        bot_2_prx = container_list["bot_2"]
+        bot_2_prx = services.ControllerCommunicationPrx.checkedCast(bot_2_prx)
+        bot_2_prx.setEnemiesAlert(pos, robots_detected)
+
+        bot_3_prx = container_list["bot_3"]
+        bot_3_prx = services.ControllerCommunicationPrx.checkedCast(bot_3_prx)
+        bot_3_prx.setEnemiesAlert(pos, robots_detected)
+
         print("Alert: {} robots detected at {},{}".format(
             robots_detected, pos.x, pos.y))

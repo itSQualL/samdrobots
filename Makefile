@@ -6,6 +6,7 @@ container:
 factory:
 	gnome-terminal --tab -e "python3 ./controller/server.py --Ice.Config=controller/factory1.config"
 	gnome-terminal --tab -e "python3 ./controller/server.py --Ice.Config=controller/factory2.config"
+	gnome-terminal --tab -e "python3 ./controller/server.py --Ice.Config=controller/detector1.config"
 
 player:
 	python3 ./player/client.py --Ice.Config=player/client.config
