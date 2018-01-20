@@ -3,6 +3,8 @@ Ice.loadSlice('-I. --all ./interfaces/services.ice')
 
 import drobots
 import services
+import random
+import math
 
 class ControllerFactoryI(services.ControllerFactory):
     """
@@ -84,28 +86,110 @@ class RobotControllerAttacker(drobots.RobotController):
         self.turno = 0
         self.bot = bot
         self.mines = mines
+        self.disparos = 0
+        self.location = self.bot.location()
+        self.angulo = 0
+        self.estado = 1
+
+
 
     def turn(self, current):
         """
         Method that will be invoked remotely by the server. In this method we
         should communicate with out Robot
         """
+        print("\n*****************************")
+        print("******TURNO "+str(self.turno) +" ATTACKER******")
+        print("*****************************\n")
+
+        print("Soy: " + str(id(self)))
+
+        print("Posicion: X = {}, Y = {}".format(self.location.x, self.location.y))
+
+        for i in range(2):
+            if (self.disparos<8):
+                print("voy a hacer mi disparo " + str(self.disparos) )
+                if (self.disparos==0):
+                    self.angulo = 0
+                    self.disparar()
+                    self.disparos += 1
+                else:
+                    self.angulo += 45
+                    self.disparar()
+                    self.disparos += 1
+            else:
+                print("reinicio disparos")
+                self.disparos=0
+                self.move()
+                break
+
+
+        print("*********FIN TURNO "+str(self.turno) + " ATTACKER*********\n")
         self.turno += 1
 
+    def move(self):
+        location=self.bot.location();
+        
+        if(location.x>390 and location.y<10):
+            self.bot.drive(225,100)
+            print("Se supone que me muevo con angulo: 225 velocidad: 100")
+        elif(location.x<10 and location.y<10):
+            self.bot.drive(315,100)
+            print("Se supone que me muevo con angulo: 315 velocidad: 100")
+        elif(location.y>390 and location.x<10):
+            self.bot.drive(45,100)
+            print("Se supone que me muevo con angulo: 45 velocidad: 100")
+        elif(location.y>390 and location.x>390):
+            self.bot.drive(135,100)
+            print("Se supone que me muevo con angulo: 135 velocidad: 100")
+        else:
+            self.bot.drive(random.randint(0,359),100)
+            print("Se supone que me muevo con angulo: random velocidad: 100")
 
-        print("*****************************")
-        print("******TURNO "+str(self.turno) +" ATTACKER******")
-        print("****************************")
+        self.location =self.bot.location()
 
-        location = self.bot.location()
-        print("Posicion: X = {}, Y = {}".format(location.x, location.y))
-
+    def disparar(self):
+        
+        if (self.location.x <= 200):
+            if (self.location.y <= 200):
+                print("voy a disparar a cuadrante 1 con x=" + str(self.location.x) + " y=" + str(self.location.y) +"\n")
+                if (self.location.x <= self.location.y):
+                    distancia = self.location.x/2
+                else:
+                    distancia = self.location.y/2
+            else:
+                print("voy a disparar a cuadrante 2 con x=" + str(self.location.x) + " y=" + str(self.location.y) +"\n")
+                auxY = 400 - self.location.y
+                if (self.location.x <= auxY):
+                    distancia = self.location.x/2
+                    
+                else:
+                    distancia = auxY/2
+        else:
+            auxX = 400 - self.location.x
+            if (self.location.y <= 200):
+                print("voy a disparar a cuadrante 3 con x=" + str(self.location.x) + " y=" + str(self.location.y) +"\n")
+                if (auxX <= self.location.y):
+                    distancia = auxX/2
+                else:
+                    distancia = self.location.y/2
+            else:
+                print("voy a disparar a cuadrante 4 con x=" + str(self.location.x) + " y=" + str(self.location.y) +"\n")
+                auxY = 400 - self.location.y
+                if (auxX <= auxY):
+                    distancia = auxX/2
+                else:
+                    distancia = auxY/2
+        
+        self.bot.cannon(self.angulo,81)
 
     def robotDestroyed(self, current):
         """
         Pending implementation:
         void robotDestroyed();
         """
+        self.estado = 0
+        print("Robot ATTACKER murio\n")
         pass
 
 
@@ -135,9 +219,9 @@ class RobotControllerDefender(drobots.RobotController):
         Method that will be invoked remotely by the server. In this method we
         should communicate with out Robot
         """
-        print("*****************************")
+        print("\n*****************************")
         print("******TURNO "+str(self.turno) +" DEFENDER******")
-        print("****************************")
+        print("****************************\n")
 
 
         
@@ -146,32 +230,31 @@ class RobotControllerDefender(drobots.RobotController):
         print("Posicion: X = {}, Y = {}".format(location.x, location.y))
 
         
-        self.angulo = random.randint(0,359)
         if(self.bot.energy()>10):
             self.escanear()
         if(self.bot.energy()>60):
             self.move(location)
 
-        print("*********FIN TURNO "+str(self.turno) + " DEFENDER*********")
+        print("*********FIN TURNO "+str(self.turno) + " DEFENDER*********\n")
         self.turno+=1
 
     def move(self, location):
         location=self.bot.location();
         
-        if(location.x>390 and location.y<10):
+        if(location.x>350 and location.y<50):
             self.bot.drive(225,100)
             print("Se supone que me muevo con angulo: 225 velocidad: 100")
-        elif(location.x<10 and location.y<10):
+        elif(location.x<50 and location.y<50):
             self.bot.drive(315,100)
             print("Se supone que me muevo con angulo: 315 velocidad: 100")
-        elif(location.y>390 and location.x<10):
+        elif(location.y>350 and location.x<50):
             self.bot.drive(45,100)
             print("Se supone que me muevo con angulo: 45 velocidad: 100")
-        elif(location.y>390 and location.x>390):
+        elif(location.y>350 and location.x>350):
             self.bot.drive(135,100)
             print("Se supone que me muevo con angulo: 135 velocidad: 100")
         else:
-            self.bot.drive(random.randint(0,360),100)
+            self.bot.drive(random.randint(0,359),100)
             print("Se supone que me muevo con angulo: random velocidad: 100")
 
 
@@ -194,7 +277,7 @@ class RobotControllerDefender(drobots.RobotController):
         Pending implementation:
         void robotDestroyed();
         """
-        print("El robot ha muerto")
+        print("El robot ha muerto\n")
         pass
 
 
