@@ -36,9 +36,15 @@ class ControllerFactoryI(services.ControllerFactory):
         """
 
         print("Make controller received bot {}".format(bot))
-        controller = ControllerI(bot, self.mines)
-        object_prx = current.adapter.addWithUUID(controller)
-        controller_prx = drobots.RobotControllerPrx.checkedCast(object_prx)
+        if bot.ice_isA("::drobots::Attacker"):
+            controller = RobotControllerAttacker(bot, self.mines)
+            object_prx = current.adapter.addWithUUID(controller)
+            controller_prx = drobots.RobotControllerPrx.checkedCast(object_prx)
+
+        elif(bot.ice_isA("::drobots::Defender")):
+            controller = RobotControllerDefender(bot, self.mines)
+            object_prx = current.adapter.addWithUUID(controller)
+            controller_prx = drobots.RobotControllerPrx.checkedCast(object_prx)
 
         self.controllers += 1
         return controller_prx
@@ -62,7 +68,7 @@ class ControllerFactoryI(services.ControllerFactory):
     def amountCreated(self, current=None):
         return self.controllers
 
-class ControllerI(drobots.RobotController):
+class RobotControllerAttacker(drobots.RobotController):
     """
     RobotController interface implementation.
 
@@ -74,6 +80,8 @@ class ControllerI(drobots.RobotController):
         ControllerI constructor. Accepts only a "bot" argument, that should be
         a RobotPrx object, usually sent by the game server.
         """
+        print("CREADO ROBOT ATTACKER")
+        self.turno = 0
         self.bot = bot
         self.mines = mines
 
@@ -82,9 +90,16 @@ class ControllerI(drobots.RobotController):
         Method that will be invoked remotely by the server. In this method we
         should communicate with out Robot
         """
+        self.turno += 1
+
+
+        print("*****************************")
+        print("******TURNO "+str(self.turno) +" ATTACKER******")
+        print("****************************")
+
         location = self.bot.location()
-        print("Turn of {} at location {},{}".format(
-            id(self), location.x, location.y))
+        print("Posicion: X = {}, Y = {}".format(location.x, location.y))
+
 
     def robotDestroyed(self, current):
         """
@@ -92,6 +107,96 @@ class ControllerI(drobots.RobotController):
         void robotDestroyed();
         """
         pass
+
+
+class RobotControllerDefender(drobots.RobotController):
+    """
+    RobotController interface implementation.
+
+    The implementation only retrieve and print the location of the assigned
+    robot
+    """
+    def __init__(self, bot, mines):
+        """
+        ControllerI constructor. Accepts only a "bot" argument, that should be
+        a RobotPrx object, usually sent by the game server.
+        """
+        print("CREADO ROBOT DEFENDER")
+        self.bot = bot
+        self.mines = mines
+        self.turno = 0
+
+
+
+
+
+    def turn(self, current):
+        """
+        Method that will be invoked remotely by the server. In this method we
+        should communicate with out Robot
+        """
+        print("*****************************")
+        print("******TURNO "+str(self.turno) +" DEFENDER******")
+        print("****************************")
+
+
+        
+
+        location = self.bot.location()
+        print("Posicion: X = {}, Y = {}".format(location.x, location.y))
+
+        
+        self.angulo = random.randint(0,359)
+        if(self.bot.energy()>10):
+            self.escanear()
+        if(self.bot.energy()>60):
+            self.move(location)
+
+        print("*********FIN TURNO "+str(self.turno) + " DEFENDER*********")
+        self.turno+=1
+
+    def move(self, location):
+        location=self.bot.location();
+        
+        if(location.x>390 and location.y<10):
+            self.bot.drive(225,100)
+            print("Se supone que me muevo con angulo: 225 velocidad: 100")
+        elif(location.x<10 and location.y<10):
+            self.bot.drive(315,100)
+            print("Se supone que me muevo con angulo: 315 velocidad: 100")
+        elif(location.y>390 and location.x<10):
+            self.bot.drive(45,100)
+            print("Se supone que me muevo con angulo: 45 velocidad: 100")
+        elif(location.y>390 and location.x>390):
+            self.bot.drive(135,100)
+            print("Se supone que me muevo con angulo: 135 velocidad: 100")
+        else:
+            self.bot.drive(random.randint(0,360),100)
+            print("Se supone que me muevo con angulo: random velocidad: 100")
+
+
+    def escanear(self):
+        angulo = random.randint(0,360)
+        enemies = self.bot.scan(angulo,20)
+
+        if enemies != 0:
+            print("He encontrado enemigos, me vuevo en direccion contraria")
+            if (angulo >= 180):
+                angulo -=180
+            else:
+                angulo+=180
+
+            self.bot.drive(angulo,100)
+
+
+    def robotDestroyed(self, current):
+        """
+        Pending implementation:
+        void robotDestroyed();
+        """
+        print("El robot ha muerto")
+        pass
+
 
 
 class DetectorControllerI(drobots.DetectorController):
