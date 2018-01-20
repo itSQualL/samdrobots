@@ -1,8 +1,9 @@
 import sys
 import Ice
 
-Ice.loadSlice('-I. --all drobots.ice')
-Ice.loadSlice('-I. --all services.ice')
+Ice.loadSlice('-I. --all ../interfaces/drobots.ice')
+Ice.loadSlice('-I. --all ../interfaces/services.ice')
+
 import drobots
 import services
 
@@ -33,7 +34,7 @@ class ClientApp(Ice.Application):
 
         #Get controller factory proxy
         container_list = container_prx.list()
-        controller_factory_prx = container_list["ControllerFactory"]
+        controller_factory_prx = container_list["controller_factory"]
         controller_factory_prx = services.ControllerFactoryPrx.checkedCast(controller_factory_prx)
 
         # Using "getProperty" forces to define the property "PlayerName"

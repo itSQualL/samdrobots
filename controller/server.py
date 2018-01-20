@@ -1,7 +1,6 @@
 import sys
 import Ice
-Ice.loadSlice('drobots.ice')
-Ice.loadSlice('--all services.ice')
+Ice.loadSlice('-I. --all ../interfaces/services.ice')
 
 import services
 from controller_factory import ControllerFactoryI
@@ -17,7 +16,7 @@ class Server(Ice.Application):
 
         container_prx = broker.propertyToProxy("ContainerProxy")
         container_prx = services.ContainerPrx.checkedCast(container_prx)
-        container_prx.link("ControllerFactory", controller_factory_prx)
+        container_prx.link("controller_factory", controller_factory_prx)
 
         self.shutdownOnInterrupt()
         broker.waitForShutdown()
