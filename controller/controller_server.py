@@ -1,6 +1,8 @@
+#!/usr/bin/python3
+
 import sys
 import Ice
-Ice.loadSlice('-I. --all ./interfaces/services.ice')
+Ice.loadSlice('-I. --all icegrid/services.ice')
 
 import services
 from controller_factory import ControllerFactoryI

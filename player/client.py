@@ -1,8 +1,10 @@
+#!/usr/bin/python3
+
 import sys
 import Ice
 
-Ice.loadSlice('-I. --all ./interfaces/drobots.ice')
-Ice.loadSlice('-I. --all ./interfaces/services.ice')
+Ice.loadSlice('-I. --all icegrid/drobots.ice')
+Ice.loadSlice('-I. --all icegrid/services.ice')
 
 import drobots
 import services
@@ -37,6 +39,7 @@ class ClientApp(Ice.Application):
 
         servant = PlayerI(container_prx)
         player_prx = adapter.addWithUUID(servant)
+        player_prx = adapter.createDirectProxy(player_prx.ice_getIdentity())
         player_prx = drobots.PlayerPrx.uncheckedCast(player_prx)
         adapter.activate()
 

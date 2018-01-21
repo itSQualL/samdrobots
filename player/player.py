@@ -1,6 +1,6 @@
 import Ice
-Ice.loadSlice('-I. --all ./interfaces/drobots.ice')
-Ice.loadSlice('-I. --all ./interfaces/services.ice')
+Ice.loadSlice('-I. --all icegrid/drobots.ice')
+Ice.loadSlice('-I. --all icegrid/services.ice')
 
 import drobots
 import services
