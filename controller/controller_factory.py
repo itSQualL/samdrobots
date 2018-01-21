@@ -100,17 +100,21 @@ class RobotControllerAttacker(services.ControllerCommunication):
         self.bot = bot
         self.mines = mines
         self.disparos = 0
+        self.turnDetector=0
         self.location = self.bot.location()
         self.angulo = 0
         self.estado = 1
-        self.alert_position = drobots.Point()
-        self.alert_enemies = 0
+        self.detector = {}
+        self.bool = False
+        self.lastAlert = None
+        self.enemiesAux=0
+        #self.alert_enemies = [0,0,0,0]
 
 
     def turn(self, current):
         """
         Method that will be invoked remotely by the server. In this method we
-        should communicate with out Robot
+        should communicate with our Robot
         """
         print("\n*****************************")
         print("******TURNO "+str(self.turno) +" ATTACKER******")
@@ -120,40 +124,94 @@ class RobotControllerAttacker(services.ControllerCommunication):
 
         print("Posicion: X = {}, Y = {}".format(self.location.x, self.location.y))
 
-        for i in range(2):
-            if (self.disparos<8):
-                print("voy a hacer mi disparo " + str(self.disparos) )
-                if (self.disparos==0):
-                    self.angulo = 0
-                    self.disparar()
-                    self.disparos += 1
+
+        if(self.bool==True):
+            self.turnDetector+=1
+            for i in range(2):
+                dist=self.calcularDistancia()
+                print("SALGO DE CALCULAR DISTANCIA dist = " +str(dist))
+                if(dist<=80):
+                    print("¡¡¡¡¡¡ME VOY A ALEJAR!!!!!!")
+                    self.move(self.location.x,self.location.y,self.lastAlert.x,self.lastAlert.y)
+                    self.turnDetector-=1
+                    break
                 else:
-                    self.angulo += 45
-                    self.disparar()
-                    self.disparos += 1
-            else:
-                print("reinicio disparos")
-                self.disparos=0
-                self.move()
-                break
+                    print("VOY A DISPARAR AL DETECTOR. Disparo numero " + str(self.turnDetector))
+                    self.dispararDetector(dist,self.lastAlert.x,self.lastAlert.y,self.location.x,self.location.y)
+                    
+
+                    if(self.turnDetector==2):
+                        self.bool=False
+                        self.turnDetector=0 
+                    print(" despues de atacar " + str(self.turnDetector) + "vez, el boolean esta a " + str(self.bool)) 
+                  
+
+        else:
+            for i in range(2):
+                self.disparos=9
+                if (self.disparos<8):
+                    print("voy a hacer mi disparo " + str(self.disparos) )
+                    if (self.disparos==0):
+                        self.angulo = 0
+                        self.disparar()
+                        self.disparos += 1
+                    else:
+                        self.angulo += 45
+                        self.disparar()
+                        self.disparos += 1
+                else:
+                    print("reinicio disparos")
+                    self.disparos=0
+                    location=self.bot.location();
+                    self.move(200,200,location.x,location.y)
+                    break
 
 
         print("*********FIN TURNO "+str(self.turno) + " ATTACKER*********\n")
         self.turno += 1
 
-    def move(self):
-        location=self.bot.location();
-        
-        m=(200 - location.y) / (200 - location.x)
+    def calcularDistancia(self):
+
+        detectorX=self.lastAlert.x
+        detectorY=self.lastAlert.y
+
+        m=math.sqrt( ( math.pow( (detectorX-self.location.x) ,2)) + ( math.pow( (detectorY-self.location.y) ,2)) )
+        m=math.ceil(m)
+        print("Distancia calculada " + str(m))
+        return m
+
+    def dispararDetector(self, dist,centerX,centerY, pointX, pointY):
+        angulo = self.calcularAngulo(centerX,centerY, pointX, pointY)
+        print("Voy a disparar al angulo " + str(angulo))
+        self.bot.cannon(angulo,dist)
+
+
+
+    def calcularAngulo(self, centerX,centerY, pointX, pointY):
+        m=(centerY - pointY) / (centerX - pointX)
         rad=math.atan(m)
         angulo = math.degrees(rad)
 
         if(angulo<0):
             angulo+=360
-        if(location.x>200 and location.y<200):
+        if(pointX>centerX and pointY<centerY):
             angulo-=180
-        elif(location.x>200 and location.y>200):
+        elif(pointX>centerX and pointY>centerY):
             angulo+=180
+        print("Angulo calculado " +str(angulo))
+        angulo=abs(angulo)
+
+        return angulo
+
+    def move(self, centerX,centerY, pointX, pointY):
+        
+        if(pointX==centerX):
+            if(pointY<=centerY):
+                angulo=90
+            else:
+                angulo=270
+        else:
+            angulo = self.calcularAngulo(centerX,centerY, pointX, pointY)
 
         print("\nVoy hacia el centro con angulo " + str(angulo))
         self.bot.drive(angulo,100);
@@ -207,8 +265,31 @@ class RobotControllerAttacker(services.ControllerCommunication):
         pass
 
     def setEnemiesAlert(self, position, enemies, current=None):
-        self.alert_position = position
-        self.alert_enemies = enemies
+        
+        if str(position) in self.detector:
+            enemiesAux = self.detector[str(position)]
+            print("\nEl detector tiene a " +str(enemiesAux))
+        else:
+            enemiesAux=0            
+            print("PRIMERA VEZ QUE VEO A ESTE SEÑOR")
+
+        self.detector[str(position)] = enemies
+        print("El detector tiene a " + str(self.detector[str(position)]))
+        self.lastAlert=position
+
+        print("Enemigos antes " +str(enemiesAux))
+        print("Enemigos ahora " +str(self.detector[str(position)]))
+
+        print(" antes de asignar el boolean esta a " + str(self.bool))
+        if(self.bool==False):
+            if(enemiesAux<self.detector[str(position)]):
+                self.bool=True
+            else:
+                self.bool=False
+        print(" despues de asignar el boolean esta a " + str(self.bool))
+
+
+        print (str(self.detector))
 
 class RobotControllerDefender(services.ControllerCommunication):
     """
@@ -226,11 +307,7 @@ class RobotControllerDefender(services.ControllerCommunication):
         self.bot = bot
         self.mines = mines
         self.turno = 0
-        self.alert_position = drobots.Point()
-        self.alert_enemies = 0
-
-
-
+        self.detector = {}
 
 
     def turn(self, current):
@@ -310,8 +387,8 @@ class RobotControllerDefender(services.ControllerCommunication):
         pass
 
     def setEnemiesAlert(self, position, enemies, current=None):
-        self.alert_position = position
-        self.alert_enemies = enemies
+        self.detector[str(position)] = enemies
+        print (str(self.detector))
 
 class DetectorControllerI(drobots.DetectorController):
     """
