@@ -1,13 +1,43 @@
-all: container factory player
+#!/usr/bin/make -f
+# -*- mode:makefile -*-
 
-container:
-	gnome-terminal --tab -e "python3 ./container/server.py --Ice.Config=container/server.config"
+all: mkdirs prepare-files up-grids
 
-factory:
-	gnome-terminal --tab -e "python3 ./controller/server.py --Ice.Config=controller/factory1.config"
-	gnome-terminal --tab -e "python3 ./controller/server.py --Ice.Config=controller/factory2.config"
-	gnome-terminal --tab -e "python3 ./controller/server.py --Ice.Config=controller/detector1.config"
+prepare-files:
+	cp player/*.py icegrid/
+	cp container/*.py icegrid/
+	cp controller/*.py icegrid/
+	cp interfaces/*.ice icegrid/
+	chmod +777 icegrid/*.py
+	icepatch2calc icegrid/.
 
-player:
-	python3 ./player/client.py --Ice.Config=player/client.config
+mkdirs:
+	mkdir -p /tmp/db/registry
+	mkdir -p /tmp/db/player_node
+	mkdir -p /tmp/db/container_node
+	mkdir -p /tmp/db/controller_node
+
+up-grids:
+	gnome-terminal --tab -e "icegridnode --Ice.Config=icegrid/container_node.config" &
+
+	@echo -- waiting registry to start
+	@while ! netstat -lptn 2> /dev/null | grep ":4067" > /dev/null; do \
+		sleep 1; \
+	done
+	@echo -- registry up
+
+	gnome-terminal --tab -e "icegridnode --Ice.Config=icegrid/controller_node.config" & \
+	gnome-terminal --tab -e "icegridnode --Ice.Config=icegrid/player_node.config" &
+
+	sleep 5
+
+	icegridadmin --Ice.Config=icegrid/locator.config -u user -p pass -e "application add 'icegrid/drobots.xml'"
+
+clean:
+	rm -rf icegrid/*.py
+	rm -rf icegrid/*.bz2
+	rm -rf icegrid/*.ice
+	rm -rf icegrid/*.sum
+	icegridadmin --Ice.Config=icegrid/locator.config -u user -p pass -e "application remove 'drobots'"
+	sudo killall icegridnode
 

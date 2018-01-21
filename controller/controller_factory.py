@@ -1,5 +1,5 @@
 import Ice
-Ice.loadSlice('-I. --all ./interfaces/services.ice')
+Ice.loadSlice('-I. --all icegrid/services.ice')
 
 import drobots
 import services
@@ -42,12 +42,14 @@ class ControllerFactoryI(services.ControllerFactory):
         if bot.ice_isA("::drobots::Attacker"):
             controller = RobotControllerAttacker(bot, self.mines)
             object_prx = current.adapter.addWithUUID(controller)
-            controller_prx = drobots.RobotControllerPrx.checkedCast(object_prx)
+            controller_prx = current.adapter.createDirectProxy(object_prx.ice_getIdentity())
+            controller_prx = drobots.RobotControllerPrx.checkedCast(controller_prx)
 
         elif(bot.ice_isA("::drobots::Defender")):
             controller = RobotControllerDefender(bot, self.mines)
             object_prx = current.adapter.addWithUUID(controller)
-            controller_prx = drobots.RobotControllerPrx.checkedCast(object_prx)
+            controller_prx = current.adapter.createDirectProxy(object_prx.ice_getIdentity())
+            controller_prx = drobots.RobotControllerPrx.checkedCast(controller_prx)
 
         self.controllers += 1
         self._set_bot_prx(controller_prx)
@@ -76,6 +78,7 @@ class ControllerFactoryI(services.ControllerFactory):
 
         controller = DetectorControllerI(self.container_prx)
         object_prx = current.adapter.addWithUUID(controller)
+        object_prx = current.adapter.createDirectProxy(object_prx.ice_getIdentity())
         self.detector_controller = \
             drobots.DetectorControllerPrx.checkedCast(object_prx)
         return self.detector_controller
