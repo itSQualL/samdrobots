@@ -108,6 +108,7 @@ class RobotControllerAttacker(services.ControllerCommunication):
         self.lastAlert = None
         self.enemiesAux=0
         self.center=False
+        self.distanciaDisparo=111
         #self.alert_enemies = [0,0,0,0]
 
 
@@ -159,10 +160,12 @@ class RobotControllerAttacker(services.ControllerCommunication):
                     print("voy a hacer mi disparo. PAYUN!")
                     if (self.angulo==360):
                         self.angulo = 0
-                        self.disparar()
+                        self.distanciaDisparo+=40
+                        self.disparar(self.distanciaDisparo)
                         self.angulo += 45
+
                     else:
-                        self.disparar()
+                        self.disparar(self.distanciaDisparo)
                         self.angulo += 45
 
 
@@ -220,7 +223,7 @@ class RobotControllerAttacker(services.ControllerCommunication):
         self.location =self.bot.location()
 
 
-    def disparar(self):
+    def disparar(self,dist):
         
         if (self.location.x <= 200):
             if (self.location.y <= 200):
@@ -253,7 +256,7 @@ class RobotControllerAttacker(services.ControllerCommunication):
                 else:
                     distancia = auxY/2
         
-        self.bot.cannon(self.angulo,111)
+        self.bot.cannon(self.angulo,dist)
 
     def robotDestroyed(self, current):
         """
