@@ -114,18 +114,22 @@
             </properties>
             <adapter name="ControllerFactoryAdapter" endpoints="tcp -p 5502" id="${server}.ControllerFactoryAdapter"/>
          </server>
-         <server id="factory3" activation="always" exe="./icegrid/controller_server.py">
+      </node>
+
+      <node name="detector_node">
+         <server id="factory_d" activation="always" exe="./icegrid/detector_server.py">
             <properties>
                <property name="ContainerProxy" value="container -t -e 1.1 @ container1.ContainerAdapter"/>
             </properties>
-            <adapter name="ControllerFactoryAdapter" endpoints="tcp -p 5503" id="${server}.ControllerFactoryAdapter"/>
+            <adapter name="DetectorFactoryAdapter" endpoints="tcp -p 5503" id="${server}.ControllerFactoryAdapter"/>
          </server>
       </node>
+
       <node name="player_node">
         <server id="client" activation="always" exe="./icegrid/client.py">
             <properties>
-               <property name="PlayerName" value="itsquall"/>
-               <property name="GameProxy" value="drobots3"/>
+               <property name="PlayerName" value="imsquall"/>
+               <property name="GameProxy" value="drobots7"/>
                <property name="GameProxy.Locator" value="IceGrid/Locator -t:tcp -h atclab.esi.uclm.es -p 4061 "/>
                <property name="ContainerProxy" value="container -t -e 1.1 @ container1.ContainerAdapter"/>
             </properties>

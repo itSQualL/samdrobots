@@ -73,15 +73,15 @@ class ControllerFactoryI(services.ControllerFactory):
         """
         print("Make detector controller.")
 
-        if self.detector_controller is not None:
-            return self.detector_controller
+        # if self.detector_controller is not None:
+            # return self.detector_controller
 
         controller = DetectorControllerI(self.container_prx)
         object_prx = current.adapter.addWithUUID(controller)
         object_prx = current.adapter.createDirectProxy(object_prx.ice_getIdentity())
-        self.detector_controller = \
+        detector_controller = \
             drobots.DetectorControllerPrx.checkedCast(object_prx)
-        return self.detector_controller
+        return detector_controller
 
     def amountCreated(self, current=None):
         return self.controllers

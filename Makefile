@@ -16,6 +16,7 @@ mkdirs:
 	mkdir -p /tmp/db/player_node
 	mkdir -p /tmp/db/container_node
 	mkdir -p /tmp/db/controller_node
+	mkdir -p /tmp/db/detector_node
 
 up-grids:
 	gnome-terminal --tab -e "icegridnode --Ice.Config=icegrid/container_node.config" &
@@ -27,9 +28,12 @@ up-grids:
 	@echo -- registry up
 
 	gnome-terminal --tab -e "icegridnode --Ice.Config=icegrid/controller_node.config" & \
+	sleep 1
+	gnome-terminal --tab -e "icegridnode --Ice.Config=icegrid/detector_node.config" & \
+	sleep 1
 	gnome-terminal --tab -e "icegridnode --Ice.Config=icegrid/player_node.config" &
 
-	sleep 5
+	sleep 3
 
 	icegridadmin --Ice.Config=icegrid/locator.config -u user -p pass -e "application add 'icegrid/drobots.xml'"
 
