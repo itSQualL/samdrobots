@@ -99,7 +99,7 @@
                <object identity="container" type="::services::Container" property="Identity"/>
             </adapter>
          </server>
-         <server-instance template="IcePatch2" directory="/home/itsquall/inginf/distrib-p/samdrobots/icegrid"/>
+         <server-instance template="IcePatch2" directory="/home/alumno/Documentos/samdrobots/icegrid"/>
       </node>
       <node name="controller_node">
         <server id="factory1" activation="always" exe="./icegrid/controller_server.py">
@@ -128,7 +128,7 @@
       <node name="player_node">
         <server id="client" activation="always" exe="./icegrid/client.py">
             <properties>
-               <property name="PlayerName" value="imsquall"/>
+               <property name="PlayerName" value="maria"/>
                <property name="GameProxy" value="drobots7"/>
                <property name="GameProxy.Locator" value="IceGrid/Locator -t:tcp -h atclab.esi.uclm.es -p 4061 "/>
                <property name="ContainerProxy" value="container -t -e 1.1 @ container1.ContainerAdapter"/>

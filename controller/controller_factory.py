@@ -1,3 +1,4 @@
+
 import Ice
 Ice.loadSlice('-I. --all icegrid/services.ice')
 
@@ -105,7 +106,7 @@ class RobotControllerAttacker(services.ControllerCommunication):
         self.turnDetector=0
         self.location = self.bot.location()
         self.angulo = 0
-        self.estado = 1
+        self.estado = 1  
         self.detector = {}
         self.bool = False
         self.lastAlert = None
@@ -163,6 +164,8 @@ class RobotControllerAttacker(services.ControllerCommunication):
                     print("voy a hacer mi disparo. PAYUN!")
                     if (self.angulo==360):
                         self.angulo = 0
+                        if (self.distanciaDisparo>170):
+                            self.distanciaDisparo=111
                         self.distanciaDisparo+=40
                         self.disparar(self.distanciaDisparo)
                         self.angulo += 45
