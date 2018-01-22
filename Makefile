@@ -37,6 +37,10 @@ up-grids:
 
 	icegridadmin --Ice.Config=icegrid/locator.config -u user -p pass -e "application add 'icegrid/drobots.xml'"
 
+update: prepare-files
+	icegridadmin --Ice.Config=icegrid/locator.config -u user -p pass -e "application update 'icegrid/drobots.xml'"
+	icegridadmin --Ice.Config=icegrid/locator.config -u user -p pass -e "application patch -f 'drobots'"
+
 clean:
 	rm -rf icegrid/*.py
 	rm -rf icegrid/*.bz2

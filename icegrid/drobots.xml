@@ -126,10 +126,12 @@
       </node>
 
       <node name="player_node">
+        <!--<server id="client" activation="always" exe="./icegrid/client_create_game.py">-->
         <server id="client" activation="always" exe="./icegrid/client.py">
             <properties>
                <property name="PlayerName" value="imsquall"/>
-               <property name="GameProxy" value="drobots7"/>
+               <property name="GameProxy" value="drobots8"/>
+               <!--<property name="GameProxy" value="factory"/>-->
                <property name="GameProxy.Locator" value="IceGrid/Locator -t:tcp -h atclab.esi.uclm.es -p 4061 "/>
                <property name="ContainerProxy" value="container -t -e 1.1 @ container1.ContainerAdapter"/>
             </properties>
